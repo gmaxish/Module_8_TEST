@@ -14,6 +14,7 @@
 * заданная точка - также экземпляр класса “Point”.
 Продемонстрировать работу класса и всех его методов.
 """
+from math import sqrt
 
 class Point():
     ox_count = 0
@@ -27,24 +28,43 @@ class Point():
     def __init__(self, x, y):
         self.x = x
         self.y = y
+        self.print_point()
         print("-" * 30)
-        print(f' The point is: {self.x} {self.y}')
-        print("-" * 30)
+
+        Point.add_point(x, y)
 
     def __del__(self):
         print(f'The point {self.x} {self.y} was deleted.')
 
     @classmethod
-    def inc_ox_count(cls):
-        cls.ox_count += 1
+    def inc_ox_count(cls, val=1):
+        cls.ox_count += val
 
     @classmethod
-    def inc_oy_count(cls):
-        cls.oy_count += 1
+    def inc_oy_count(cls, val=1):
+        cls.oy_count += val
 
     @classmethod
-    def inc_oo_count(cls):
-        cls.oo_count += 1
+    def inc_oo_count(cls, val=1):
+        cls.oo_count += val
+
+    @classmethod
+    def add_point(cls, x, y):
+        if cls.is_start_point(x, y):
+            cls.inc_oo_count()
+        elif cls.point_on_ox(y):
+            cls.inc_ox_count()
+        elif cls.point_on_oy(x):
+            cls.inc_oy_count()
+
+    @classmethod
+    def del_point(cls, x, y):
+        if cls.is_start_point(x, y):
+            cls.inc_oo_count(val=-1)
+        elif cls.point_on_ox(y):
+            cls.inc_ox_count(val=-1)
+        elif cls.point_on_oy(x):
+            cls.inc_oy_count(val=-1)
 
     @staticmethod
     def is_start_point(x, y):
@@ -59,8 +79,38 @@ class Point():
         return x == 0
 
     def move_ox(self, x):
+        Point.del_point(self.x, self.y)
         self.x += x
+        Point.add_point(self.x, self.y)
 
     def move_oy(self, y):
+        Point.del_point(self.x, self.y)
         self.y += y
+        Point.add_point(self.x, self.y)
 
+    def dist_to_start_point(self):
+        d = sqrt(self.x ** 2 + self.y ** 2)
+        print(f'The distance to the start point(0, 0) is {d:.2}')
+        return d
+
+    def distance_to_point(self, point):
+        x_len = self.x - point.x
+        y_len = self.y - point.y
+        d = sqrt(x_len ** 2 + y_len ** 2)
+        print(f'The distanca to the point {point.x} {point.y} is {d:.2}')
+        return d
+
+    def is_the_same_point(self, point):
+        res = self.x == point.x and self.y == point.y
+        print(f'The point {"coincides" if res else "not coincides"} with the point {point.x} {point.y}')
+        return res
+
+    def print_point(self):
+        print(f' The point is: {self.x} {self.y}')
+
+p = [Point(2, 6), Point(4, 0), Point(0, 3), Point(0, 0), Point(0, 12)]
+
+print(f'Points on OX {Point.ox_count}')
+print(f'Points on OY {Point.oy_count}')
+print(f'Points on OO {Point.oo_count}')
+print()
