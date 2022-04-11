@@ -22,22 +22,45 @@ class Time:
     offset = 2
     timezone = '{pref}{offset:+}'.format(pref=pref, offset=offset)
 
+
     def __new__(cls, *args, **kwargs):
         print("New timestamp was created.")
         return super().__new__(cls)
 
     def __init__(self, hours, minutes, seconds):
         if Time.is_correct(hours, minutes, seconds):
-            self.hours = hours
-            self.minutes = minutes
-            self.seconds = seconds
+            self.set_hours(hours)
+            self.set_minutes(minutes)
+            self.set_seconds(seconds)
 
             self.print_info()
         else:
+            self.set_hours(0)
+            self.set_minutes(0)
+            self.set_seconds(0)
+
             print("Wrong data!")
 
     def __del__(self):
         print(f'The timestamp {self.get_str()} was deleted')
+
+    def set_hours(self, hours):
+        self._hours = hours
+
+    def get_hours(self):
+        return self._hours
+
+    def set_minutes(self, minutes):
+        self._minutes = minutes
+
+    def get_minutes(self):
+        return self._minutes
+
+    def set_seconds(self, seconds):
+        self._seconds = seconds
+
+    def get_seconds(self):
+        return self._seconds
 
     @classmethod
     def edit_offset(cls, value):
@@ -64,33 +87,41 @@ class Time:
         return hours, minutes, sec
 
     def get_str(self):
-        return f'{self.hours:02}:{self.minutes:02}:{self.seconds:02}'
+        return f'{self.get_hours():02}:{self.get_minutes():02}:{self.get_seconds():02}'
 
     def print_info(self):
-        print(f'The timestamp: {self.hours:02}:{self.minutes:02}:{self.seconds:02}')
+        print(f'The timestamp: {self.get_hours():02}:{self.get_minutes():02}:{self.get_seconds():02}')
 
     def difference_in_seconds(self, timestamp):
-        time1 = self.convert_to_seconds(self.hours, self.minutes, self.seconds)
-        time2 = self.convert_to_seconds(timestamp.hours, timestamp.minutes, timestamp.seconds)
+        time1 = self.convert_to_seconds(self.get_hours(), self.get_minutes(), self.get_seconds())
+        time2 = self.convert_to_seconds(timestamp.get_hours(), timestamp.get_minutes(), timestamp.get_seconds())
         result = time2 - time1
-        print(f'The difference between {self.hours:02}:{self.minutes:02}:{self.seconds:02} and '
-              f'{timestamp.hours:02}:{timestamp.minutes:02}:{timestamp.seconds:02} is {result:+} seconds.')
+        print(f'The difference between {self.get_hours():02}:{self.get_minutes():02}:{self.get_seconds():02} and '
+              f'{timestamp.get_hours():02}:{timestamp.get_minutes():02}:{timestamp.get_seconds():02} is {result:+} '
+              f'seconds.')
 
     def plus_seconds(self, seconds):
-        time1 = self.convert_to_seconds(self.hours, self.minutes, self.seconds)
+        time1 = self.convert_to_seconds(self.get_hours(), self.get_minutes(), self.get_seconds())
         time1 += seconds
-        self.hours, self.minutes, self.seconds = Time.convert_from_seconds(time1)
+        hours, minutes, seconds = Time.convert_from_seconds(time1)
+        self.set_hours(hours)
+        self.set_minutes(minutes)
+        self.set_seconds(seconds)
         self.print_info()
 
     def minus_seconds(self, seconds):
-        time1 = self.convert_to_seconds(self.hours, self.minutes, self.seconds)
+        time1 = self.convert_to_seconds(self.get_hours(), self.get_minutes(), self.get_seconds())
         time1 -= seconds
-        self.hours, self.minutes, self.seconds = Time.convert_from_seconds(time1)
+        hours, minutes, seconds = Time.convert_from_seconds(time1)
+        self.set_hours(hours)
+        self.set_minutes(minutes)
+        self.set_seconds(seconds)
         self.print_info()
 
     def is_the_same_moment(self, timestamp):
-        res = self.hours == timestamp.hours and self.minutes == timestamp.minutes and self. seconds == timestamp.seconds
-        print(f'The times {self.hours:02}:{self.minutes:02}:{self.seconds:02} and '
+        res = self.get_hours() == timestamp.get_hours() and self.get_minutes() == timestamp.get_minutes()\
+              and self. get_seconds() == timestamp.get_seconds()
+        print(f'The times {self.get_str()} and '
               f'{timestamp.hours:02}:{timestamp.minutes:02}:{timestamp.seconds:02} '
               f'are {"not" if not res else ""} the same')
         return res
@@ -101,3 +132,6 @@ t2 = Time(22, 70, 30)
 t3 = Time(14, 21, 62)
 t4 = Time(14, 21, 12)
 print()
+
+Time.edit_offset(10)
+print(Time.offset)
